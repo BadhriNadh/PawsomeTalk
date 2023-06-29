@@ -20,10 +20,15 @@ public class RoomController {
     RoomService roomService;
 
     @GetMapping("/create/{name}")
-    public ResponseEntity<Map<String, Object>> getConnById(@PathVariable("name") String name) {
+    public ResponseEntity<Map<String, Object>> createRoom(@PathVariable("name") String name) {
         Map<String, Object> response = new HashMap<>();
         response.put("roomId", roomService.createRoom());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("join/{roomId}/{name}")
+    public ResponseEntity<String> joinRoom(@PathVariable("roomId") String roomId, @PathVariable("name") String name){
+        return ResponseEntity.status(HttpStatus.OK).body("Hello");
     }
 }
