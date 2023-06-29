@@ -11,7 +11,6 @@ public class PingsController {
     @MessageMapping("/send/{roomId}")
     @SendTo("/pawsome-ui/receive/{roomId}")
     public Ping message(Ping ping) {
-        System.out.println(ping);
         return ping ;
     }
 }
