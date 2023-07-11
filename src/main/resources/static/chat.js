@@ -52,10 +52,10 @@ function sendMessage() {
   if (message !== "") {
     stompClient.send('/pawsome-api/send/' + roomNumber, {},
     JSON.stringify({
-        'roomId': roomNumber,
-        'userName': userName,
+        'senderName': userName,
         'message': message,
-        'time': new Date().getTime()
+        'language': 'ENG',
+        'timeStamp': new Date()
       })
     );
     messageInput.value = "";
@@ -65,13 +65,13 @@ function sendMessage() {
 
 function addMessage(data) {
 
-  var messageClass = (data.userName === userName) ? "outgoing" : "incoming";
+  var messageClass = (data.senderName === userName) ? "outgoing" : "incoming";
 
   var messageElement = document.createElement("div");
   messageElement.className = "message " + messageClass;
   messageElement.innerHTML = `
     <div class="message-content">
-      <div class="message-name">${data.userName}</div>
+      <div class="message-name">${data.senderName}</div>
       <div class="message-text">${data.message}</div>
     </div>
   `;

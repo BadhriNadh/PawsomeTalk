@@ -1,5 +1,6 @@
 package com.cloud.chat.controller;
 
+import com.cloud.chat.models.Chat;
 import com.cloud.chat.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,8 @@ public class RoomController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("join/{roomId}/{name}")
-    public ResponseEntity<String> joinRoom(@PathVariable("roomId") String roomId, @PathVariable("name") String name){
-        return ResponseEntity.status(HttpStatus.OK).body("Hello");
+    @GetMapping("join/{roomId}")
+    public ResponseEntity<Chat> joinRoom(@PathVariable("roomId") String roomId){
+        return ResponseEntity.status(HttpStatus.OK).body(roomService.getRoomChat(roomId));
     }
 }
