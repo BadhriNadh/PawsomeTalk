@@ -1,0 +1,12 @@
+version: '3'
+services:
+  chat:
+    image: badhrinadh/chat
+    ports:
+      - 8080:8080
+    environment:
+      - AWS_DYNAMODB_ENDPOINT=https://dynamodb.us-east-1.amazonaws.com
+      - AWS_ACCESS_KEY=ASIAYQFR7ZBZYSTG4U24
+      - AWS_SECRET_KEY=P5O8G4qGM1gqDB14CunYpUTnYh76vEgDdUHxvq4b
+      - AWS_SESSION_TOKEN=FwoGZXIvYXdzEI7//////////wEaDO3dTlqppZ2Kch/iGCLAAWN/RV5DbUYoXzT+etEZes9+zuFd6LcKpLa5IQc8UxWMRTKfc3tBJ6WCSI3BuACzuHjVRNb7L1cPlPFKvlrlOmXgG/WDxQuGsO8MGsxMsdeckWM8P1C3IKC1vVUVaRLm5PSzBCcgcw1tbrMqxS+cibP4Ovnf1gGqosTKUeJBUWwq13FsQ6xcHKKuXKtW4XDrmSbi+wDIfbknva3Vipc3oJkbFZ2XVNisZnIJ7AygLKzSsFsg+EYSnf5WcWpf00uC8ijBu8GlBjItzlrmr4Mj8usx/1hXNuhFGSH2FideZYXRf77mN+PgBgve6jAvWFYk8XCqbURg
+      - AWS_REGION=us-east-1
