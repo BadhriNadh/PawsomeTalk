@@ -4,73 +4,108 @@ body {
   font-family: Arial, sans-serif;
   background-color: #222;
   color: #fff;
+  overflow: hidden;
 }
 
-#room-id-text{
-    flex: 1;
-    text-align: center;
-    font-weight: bold;
-    font-size: 20px;
-}
-
-#card-container {
-  display: flex;
+#main-container {
   justify-content: center;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  height: 100vh;
+  overflow: hidden;
 }
+/* -------------------------------------------------- */
 
-#room-card {
+#room-title-card {
   display: flex;
   align-items: center;
+  justify-content: center;
   background-color: #333;
-  padding: 10px;
   border-radius: 5px;
-  width: 75%;
-  margin-left: auto;
-  margin-right: auto;
+  width: 80%;
+  height: 5%;
+  margin: 2vh auto auto;
 }
 
+#room-id-text {
+  text-align: center;
+  font-weight: bold;
+  font-size: 5vh ;
+}
+
+#delete-button,
+#add-button,
 #back-button {
   border: none;
   background-color: transparent;
+  border-radius: 8px;
   color: #fff;
   font-weight: bold;
-  cursor: pointer;
+  font-size: 2.5vh;
 }
 
-#delete-button {
-  border: none;
-  background-color: transparent;
+
+#back-button {
+  margin-right: auto;
+  margin-left: 1vw;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#back-button:hover {
+  background-color: #ed4242; /* Red */
   color: #fff;
-  font-weight: bold;
-  cursor: pointer;
+}
+
+#back-button:active {
+  background-color: #990000; /* Darker red */
+  color: #fff;
+}
+
+
+#delete-button {
   margin-left: auto;
+  margin-right: 1vw;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+#delete-button:hover {
+  background-color: #ed4242; /* Red */
+  color: #fff;
+}
+
+#delete-button:active {
+  background-color: #990000; /* Darker red */
+  color: #fff;
 }
 
 #add-button {
-  border: none;
-  background-color: transparent;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
+  margin-right: 2px;
+  transition: background-color 0.3s, color 0.3s;
 }
+
+#add-button:hover {
+  background-color: #059005; /* Red */
+  color: #fff;
+}
+
+#add-button:active {
+  background-color: #006600; /* Darker red */
+  color: #fff;
+}
+/* ---------------------------------------------------- */
 
 
 #chat-container {
-  padding: 10px;
-  margin-bottom: 10px;
-  height: 80vh ;
+  /*padding: 2vw;*/
+  margin-bottom: 1vh;
+  height: 84vh;
   overflow-y: auto;
-  width: 75%;
+  width: 80vw;
   margin-left: auto;
   margin-right: auto;
 }
 
-
 .message {
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: 1vh;
 }
 
 .incoming {
@@ -83,61 +118,60 @@ body {
 
 .message-content {
   background-color: #333;
-  padding: 8px 16px;
+  padding: 1vh 2vh;
   border-radius: 20px;
-  max-width: 70%;
+  min-width: 30%;
+  max-width: 60%;
 }
 
 .message-text {
-  font-size: 14px;
+  font-size: 2vh;
   word-wrap: break-word;
 }
 
 .message-name {
-  font-size: 12px;
+  font-size: 1.5vh;
   color: #aaa;
 }
+
+/* ---------------------------------------------------- */
 
 .message-input-container {
   display: flex;
   align-items: center;
-  padding: 15px;
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  padding: 4px;
   background-color: #222;
-  width: 75%; 
+  width: 90vw;
   margin-left: auto;
   margin-right: auto;
 }
 
 #message-input {
-  font-size: 14px;
+  font-size: 3vh;
   flex-grow: 1;
-  padding: 12px;
-  border: 1px solid #555;
-  border-radius: 20px;
+  padding: 0.5vw;
+  border: 0.2vw solid #555;
+  border-radius: 2vw;
   color: #fff;
   background-color: #222;
   resize: vertical;
-  height: 1em;
-  min-height: 1em;
-  max-height: 4em;
-  overflow-y: auto;
+  height: 4vh;
 }
 
+
 #send-button {
-  margin-left: 10px;
-  padding: 12px 24px;
+  margin-left: 8px;
+  padding: 1vh 2vh;
   border: none;
-  border-radius: 20px;
+  border-radius: 8px;
   background-color: #0084ff;
   color: #fff;
   font-weight: bold;
-  cursor: pointer;
+  font-size: 2vh;
 }
 
 #send-button:hover {
   background-color: #005cbf;
 }
+
+
