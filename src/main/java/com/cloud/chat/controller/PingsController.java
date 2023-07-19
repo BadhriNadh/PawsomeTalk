@@ -7,18 +7,22 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
+@CrossOrigin
 @Controller
 public class PingsController {
 
-    @Autowired
-    RoomService roomService;
+    final RoomService roomService;
+
+    public PingsController(RoomService roomService) {
+        this.roomService = roomService;
+    }
+
     @MessageMapping("/send/{roomId}")
     @SendTo("/pawsome-ui/receive/{roomId}")
     public Ping message(@DestinationVariable String roomId, Ping ping) {
-
-        Ping translatedPing = roomService.translateAndStore(roomId, ping);
-
-        return translatedPing ;
+        roomService.savePing(roomId, ping);
+        return ping ;
     }
 }

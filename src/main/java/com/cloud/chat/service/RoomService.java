@@ -13,8 +13,11 @@ import java.util.Random;
 @Service
 public class RoomService {
 
-    @Autowired
-    DynamoRepository dynamoRepository;
+    final DynamoRepository dynamoRepository;
+
+    public RoomService(DynamoRepository dynamoRepository) {
+        this.dynamoRepository = dynamoRepository;
+    }
 
     private String generateRandomString(int length) {
         String characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -32,10 +35,10 @@ public class RoomService {
 
     public String createRoom(){
         String roomId = generateRandomString(4);
-        //Chat chat = dynamoRepository.getRoomChat(roomId);
-        //if(chat == null){
-        //    createRoom();
-        //}
+        Chat chat = dynamoRepository.getRoomChat(roomId);
+        if (chat != null) {
+            return createRoom();
+        }
         dynamoRepository.createChatRoom(roomId);
         return roomId;
     }
@@ -47,8 +50,13 @@ public class RoomService {
         return new Chat(roomId, pings);
     }
 
-    public Ping translateAndStore(String roomId, Ping ping){
+    public boolean joinRoom(String roomId){
+        Chat chat = dynamoRepository.getRoomChat(roomId);
+
+        return chat != null;
+    }
+
+    public void savePing(String roomId, Ping ping){
         dynamoRepository.updateChat(roomId, ping);
-        return ping;
     }
 }

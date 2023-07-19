@@ -11,8 +11,11 @@ import java.util.List;
 @Repository
 public class DynamoRepository {
 
-    @Autowired
-    private DynamoDBMapper dynamoDBMapper;
+    private final DynamoDBMapper dynamoDBMapper;
+
+    public DynamoRepository(DynamoDBMapper dynamoDBMapper) {
+        this.dynamoDBMapper = dynamoDBMapper;
+    }
 
     public Chat getRoomChat(String roomId){
         return dynamoDBMapper.load(Chat.class, roomId);
