@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-@CrossOrigin
+@CrossOrigin("*")
 @Controller
 public class PingsController {
 
@@ -20,7 +20,7 @@ public class PingsController {
     }
 
     @MessageMapping("/send/{roomId}")
-    @SendTo("/pawsome-ui/receive/{roomId}")
+    @SendTo("/group-dot-ui/receive/{roomId}")
     public Ping message(@DestinationVariable String roomId, Ping ping) {
         roomService.savePing(roomId, ping);
         return ping ;

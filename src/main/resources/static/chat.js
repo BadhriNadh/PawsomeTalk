@@ -34,11 +34,11 @@ document.addEventListener("DOMContentLoaded", function() {
 //////////////////////////////////////////////////////////////////
 
 function connect() {
-  var socket = new SockJS('/pawsome-websocket');
+  var socket = new SockJS('/group-dot-websocket');
   stompClient = Stomp.over(socket);
   stompClient.connect({}, function (frame) {
       console.log('Connected: ' + frame);
-      stompClient.subscribe('/pawsome-ui/receive/'+roomNumber, function (ping) {
+      stompClient.subscribe('/group-dot-ui/receive/'+roomNumber, function (ping) {
           var data = JSON.parse(ping.body);
           addMessage(data);
       });
@@ -50,7 +50,7 @@ function connect() {
 function sendMessage() {
   var message = messageInput.value.trim();
   if (message !== "") {
-    stompClient.send('/pawsome-api/send/' + roomNumber, {},
+    stompClient.send('/group-dot-api/send/' + roomNumber, {},
     JSON.stringify({
         'senderName': userName,
         'message': message,

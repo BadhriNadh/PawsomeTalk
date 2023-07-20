@@ -13,13 +13,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/pawsome-ui");
-        registry.setApplicationDestinationPrefixes("/pawsome-api");
+        registry.enableSimpleBroker("/group-dot-ui");
+        registry.setApplicationDestinationPrefixes("/group-dot-api");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/pawsome-websocket").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/group-dot-websocket").setAllowedOriginPatterns("*");
     }
 
 }

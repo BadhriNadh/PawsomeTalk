@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/room")
 public class RoomController {
