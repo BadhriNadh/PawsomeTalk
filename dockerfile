@@ -8,6 +8,8 @@ RUN mvn clean package -DskipTests
 
 FROM openjdk:17
 
+RUN apt-get update && apt-get install -y jq
+
 RUN mkdir /deploy
 
 COPY --from=build /app/target/chat-0.0.1.jar /deploy/chat.jar

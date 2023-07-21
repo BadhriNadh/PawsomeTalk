@@ -20,9 +20,9 @@ public class PingsController {
     }
 
     @MessageMapping("/send/{roomId}")
-    @SendTo("/group-dot-ui/receive/{roomId}")
+    @SendTo("/group-dots-ui/receive/{roomId}")
     public Ping message(@DestinationVariable String roomId, Ping ping) {
-        roomService.savePing(roomId, ping);
-        return ping ;
+
+        return roomService.savePing(roomId, ping);
     }
 }

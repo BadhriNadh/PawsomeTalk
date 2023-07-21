@@ -14,9 +14,11 @@ import java.util.Random;
 public class RoomService {
 
     final DynamoRepository dynamoRepository;
+    final TranslateService translateService;
 
-    public RoomService(DynamoRepository dynamoRepository) {
+    public RoomService(DynamoRepository dynamoRepository, TranslateService translateService) {
         this.dynamoRepository = dynamoRepository;
+        this.translateService = translateService;
     }
 
     private String generateRandomString(int length) {
@@ -56,7 +58,10 @@ public class RoomService {
         return chat != null;
     }
 
-    public void savePing(String roomId, Ping ping){
+    public Ping savePing(String roomId, Ping ping){
+        String translatedMessage = translateService.translateText(ping.getMessage(), ping.getLanguage().trim());
+        ping.setMessage(translatedMessage);
         dynamoRepository.updateChat(roomId, ping);
+        return ping;
     }
 }
