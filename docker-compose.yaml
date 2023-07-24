@@ -1,7 +1,7 @@
 version: '3'
 services:
   chat:
-    image: badhrinadh/chat
+    image: badhrinadh/group-dots-api
     ports:
       - 8080:8080
     environment:
