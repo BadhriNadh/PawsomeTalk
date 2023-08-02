@@ -1,25 +1,27 @@
 package com.cloud.chat.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@DynamoDBTable(tableName = "Chats")
+@Document(collection = "Chats") // Equivalent to DynamoDBTable(tableName = "Chats")
 public class Chat {
 
-    @DynamoDBHashKey(attributeName = "roomId")
+    @Id // Equivalent to DynamoDBHashKey
     private String roomId;
-    @DynamoDBAttribute(attributeName = "pings")
-    private List<Ping> pings;
 
-    public Chat() {}
+    private List<Ping> pings; // No need for additional annotations
+
+    public Chat() {
+    }
+
     public Chat(String roomId, List<Ping> pings) {
         this.roomId = roomId;
         this.pings = pings;
     }
 
+    // Getters and setters
     public String getRoomId() {
         return roomId;
     }

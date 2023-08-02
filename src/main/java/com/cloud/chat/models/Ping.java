@@ -1,29 +1,28 @@
 package com.cloud.chat.models;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBDocument;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.Date;
 
-@DynamoDBDocument
+@Document
 public class Ping {
-    @DynamoDBAttribute
     private String senderName;
-    @DynamoDBAttribute
     private String message;
-    @DynamoDBAttribute
     private String language;
-    @DynamoDBAttribute
-    private Date timeStamp;
+    private Instant timeStamp;
 
-    public Ping(){}
-    public Ping(String senderName, String message, String language, Date timeStamp) {
+    public Ping() {
+    }
+
+    public Ping(String senderName, String message, String language, Instant timeStamp) {
         this.senderName = senderName;
         this.message = message;
         this.language = language;
         this.timeStamp = timeStamp;
     }
+
+    // Getters and setters
+    // ...
 
     public String getSenderName() {
         return senderName;
@@ -49,11 +48,11 @@ public class Ping {
         this.language = language;
     }
 
-    public Date getTimeStamp() {
+    public Instant getTimeStamp() {
         return timeStamp;
     }
 
-    public void setTimeStamp(Date timeStamp) {
+    public void setTimeStamp(Instant timeStamp) {
         this.timeStamp = timeStamp;
     }
 }

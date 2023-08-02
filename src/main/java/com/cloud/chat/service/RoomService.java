@@ -1,9 +1,8 @@
 package com.cloud.chat.service;
 
-import com.cloud.chat.Repository.DynamoRepository;
+import com.cloud.chat.Repository.MongoRepository;
 import com.cloud.chat.models.Chat;
 import com.cloud.chat.models.Ping;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -13,11 +12,11 @@ import java.util.Random;
 @Service
 public class RoomService {
 
-    final DynamoRepository dynamoRepository;
+    final MongoRepository mongoRepository;
     final TranslateService translateService;
 
-    public RoomService(DynamoRepository dynamoRepository, TranslateService translateService) {
-        this.dynamoRepository = dynamoRepository;
+    public RoomService(MongoRepository dynamoRepository, TranslateService translateService) {
+        this.mongoRepository = dynamoRepository;
         this.translateService = translateService;
     }
 
@@ -37,23 +36,23 @@ public class RoomService {
 
     public String createRoom(){
         String roomId = generateRandomString(4);
-        Chat chat = dynamoRepository.getRoomChat(roomId);
+        Chat chat = mongoRepository.getRoomChat(roomId);
         if (chat != null) {
             return createRoom();
         }
-        dynamoRepository.createChatRoom(roomId);
+        mongoRepository.createChatRoom(roomId);
         return roomId;
     }
 
     public Chat getRoomChat(String roomId){
-        Chat chat = dynamoRepository.getRoomChat(roomId);
+        Chat chat = mongoRepository.getRoomChat(roomId);
         List<Ping> pings = chat.getPings().stream().sorted(Comparator.comparing(Ping::getTimeStamp)).toList();
 
         return new Chat(roomId, pings);
     }
 
     public boolean joinRoom(String roomId){
-        Chat chat = dynamoRepository.getRoomChat(roomId);
+        Chat chat = mongoRepository.getRoomChat(roomId);
 
         return chat != null;
     }
@@ -61,7 +60,7 @@ public class RoomService {
     public Ping savePing(String roomId, Ping ping){
         String translatedMessage = translateService.translateText(ping.getMessage(), ping.getLanguage().trim());
         ping.setMessage(translatedMessage);
-        dynamoRepository.updateChat(roomId, ping);
+        mongoRepository.updateChat(roomId, ping);
         return ping;
     }
 }

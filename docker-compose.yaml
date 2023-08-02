@@ -5,11 +5,4 @@ services:
     ports:
       - 8080:8080
     environment:
-      - AWS_DYNAMODB_ENDPOINT=https://dynamodb.us-east-1.amazonaws.com
-      - AWS_ACCESS_KEY=
-      - AWS_SECRET_KEY=
-      - AWS_SESSION_TOKEN=
-      - AWS_REGION=us-east-1
-      - GOOGLE_API_KEY=$(cat /config.json | jq -r '.GOOGLE_API_KEY')
-    volumes:
-      - ./config.json:/config.json:ro
+      - GOOGLE_API_KEY=AIzaSyBuSgMNKQbw77OpJpKRhjH17alYk85Exxk

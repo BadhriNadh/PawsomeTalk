@@ -1,34 +1,35 @@
 package com.cloud.chat.Repository;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.cloud.chat.models.Chat;
 import com.cloud.chat.models.Ping;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public class DynamoRepository {
+public class MongoRepository {
 
-    private final DynamoDBMapper dynamoDBMapper;
+    private final MongoTemplate mongoTemplate;
 
-    public DynamoRepository(DynamoDBMapper dynamoDBMapper) {
-        this.dynamoDBMapper = dynamoDBMapper;
+    @Autowired
+    public MongoRepository(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
     }
 
     public Chat getRoomChat(String roomId){
-        return dynamoDBMapper.load(Chat.class, roomId);
+        return mongoTemplate.findById(roomId, Chat.class);
     }
 
     public void createChatRoom(String roomId){
         Chat zeroChat = new Chat(roomId, List.of());
-        dynamoDBMapper.save(zeroChat);
+        mongoTemplate.save(zeroChat);
     }
 
     public void updateChat(String roomId, Ping ping){
-        Chat chat = dynamoDBMapper.load(Chat.class, roomId);
+        Chat chat = mongoTemplate.findById(roomId, Chat.class);
         chat.getPings().add(ping);
-        dynamoDBMapper.save(chat);
+        mongoTemplate.save(chat);
     }
 }
