@@ -1,6 +1,6 @@
 # group-dots
 
-[GroupDots](https://group-dot-ui-htnf5ny6tq-wl.a.run.app)    
+Try it out: [GroupDots](https://group-dot-ui-htnf5ny6tq-wl.a.run.app)    
 [group-dots-ui](https://github.com/BadhriNadh/group-dots-ui)
 
 
