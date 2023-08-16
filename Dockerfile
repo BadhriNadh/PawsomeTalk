@@ -8,11 +8,9 @@ RUN mvn clean package -DskipTests
 
 FROM openjdk:17
 
-RUN mkdir /deploy
+WORKDIR /deploy
 
 COPY --from=build /app/target/chat-0.0.1.jar /deploy/chat.jar
-
-WORKDIR /deploy
 
 EXPOSE 8080
 
