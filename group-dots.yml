@@ -329,11 +329,11 @@ Resources:
           usermod -a -G docker ec2-user
           docker run -p 443:8080 \
             -e "AWS_DYNAMODB_ENDPOINT=https://dynamodb.us-east-1.amazonaws.com"\
-            -e "AWS_ACCESS_KEY=ASIAYQFR7ZBZQFI722CW" \
-            -e "AWS_SECRET_KEY=FhDKvlgElWIQldSuetSC1+TiDq6qQ7ebQUmQhyg4" \
-            -e "AWS_SESSION_TOKEN=FwoGZXIvYXdzEDQaDFOXxHfHkdgNsA7RHyLAATB25oumNjPeomAqLOhb3eaAlPpyqlgjFJd6dXuXIJWHvy/rx3El4hRonJPnX91cQiHwGcupXbqUc888XSHRiDndqgONL2R20/rFdLRERxPLkuzHQpj9XwqOhKqDQaWdWPUVgTdd12ly5fHpcjUOhkDfbPPlMdb4eWxGeLoyJV3BDGWFqAzVqnhNa11CGt5oq7qJ0/eXJIGwQzKCrxvwodFRbGZg5eWuIB/BGRAa/ipoafNztDE/jm2U38RV4J+hBCiWmZ6mBjIt/dQfJ0oF9bwyV3RRQgB1tWYlRUtumHBETwxH758sEhB9f0mvhctNQzpgdPxk"\
+            -e "AWS_ACCESS_KEY=" \
+            -e "AWS_SECRET_KEY=" \
+            -e "AWS_SESSION_TOKEN="\
             -e "AWS_REGION=us-east-1" \
-            -e "GOOGLE_API_KEY=AIzaSyBuSgMNKQbw77OpJpKRhjH17alYk85Exxk" \
+            -e "GOOGLE_API_KEY=" \
             badhrinadh/group-dots-api
 
 Outputs:
