@@ -1,0 +1,345 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+
+  groupDotsSns:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: groupDotsSns
+      TopicName: groupDotsSnsTopic
+
+  groupDotsSubscribeLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: groupDotsSubscribeLambda
+      Role: arn:aws:iam::584488831091:role/LabRole
+      Timeout: 300
+      Runtime: python3.10
+      PackageType: Zip
+      Handler: index.lambda_handler
+      Code:
+        ZipFile: |
+          import boto3
+          import json
+
+          sns = boto3.client('sns')
+
+          def lambda_handler(event, context):
+              try:
+                  mail = event['mail']
+
+                  filter_policy = {
+                      'email': [mail]
+                  }
+
+                  topic_arn = 'arn:aws:sns:us-east-1:584488831091:groupDotsSnsTopic'
+                  subscription = sns.subscribe(
+                      TopicArn=topic_arn,
+                      Protocol='email',
+                      Endpoint=mail,
+                      Attributes={
+                          'FilterPolicy': json.dumps(filter_policy)
+                      }
+                  )
+
+                  return {
+                      'statusCode': 200,
+                      'body': 'Subscribe request sent'
+                  }
+              except Exception as e:
+                  return {
+                      'statusCode': 500,
+                      'body': f'Error: {e}'
+                  }
+
+  groupDotsInviteLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: groupDotsInviteLambda
+      Role: arn:aws:iam::584488831091:role/LabRole
+      Timeout: 300
+      Runtime: python3.10
+      PackageType: Zip
+      Handler: index.lambda_handler
+      Code:
+        ZipFile: |
+          import boto3
+          import json 
+
+          def lambda_handler(event, context):
+
+              sns_client = boto3.client('sns')
+
+              topic_arn = 'arn:aws:sns:us-east-1:584488831091:groupDotsSnsTopic'
+              target_email = event['mail']
+              message = event['roomId']
+
+              try:
+                  response = sns_client.publish(
+                      TargetArn=topic_arn,
+                      Message=message,
+                      MessageAttributes={
+                          'email': {
+                              'DataType': 'String',
+                              'StringValue': target_email
+                          }
+                      }
+                  )
+                  return {
+                      'statusCode': 200,
+                      'body': f"Message sent successfully to {target_email}. MessageId: {response['MessageId']}"
+                  }
+              except Exception as e:
+                  return {
+                      'statusCode': 500,
+                      'body': f"Error: {str(e)}"
+                  }                          
+  
+  groupDotsApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: 'groupDotsApi'
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  groupDotsApiSubscribe:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref groupDotsApi
+      ParentId: !GetAtt
+        - groupDotsApi
+        - RootResourceId
+      PathPart: subscribe
+    DependsOn:
+      - groupDotsApi
+
+  groupDotsApiInvite:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref groupDotsApi
+      ParentId: !GetAtt
+        - groupDotsApi
+        - RootResourceId
+      PathPart: invite
+    DependsOn:
+      - groupDotsApi
+
+  subscribeCors:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ResourceId: !Ref groupDotsApiSubscribe
+      RestApiId: !Ref groupDotsApi
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+      MethodResponses:
+        - ResponseModels:
+            application/json: Empty
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+            
+  inviteCors:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ResourceId: !Ref groupDotsApiInvite
+      RestApiId: !Ref groupDotsApi
+      AuthorizationType: NONE
+      HttpMethod: OPTIONS
+      Integration:
+        Type: MOCK
+        IntegrationResponses:
+          - ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+            StatusCode: '200'
+        PassthroughBehavior: NEVER
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+      MethodResponses:
+        - ResponseModels:
+            application/json: Empty
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+
+  groupDotsApiSubscribeEndpoint:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ResourceId: !Ref groupDotsApiSubscribe
+      RestApiId: !Ref groupDotsApi
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SUBSCRIBE_LAMBDA}/invocations
+          - SUBSCRIBE_LAMBDA: !GetAtt groupDotsSubscribeLambda.Arn
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates:
+              application/json: $input.json('$')
+            ResponseParameters:
+                method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+                method.response.header.Access-Control-Allow-Origin: "'*'"
+        RequestTemplates:
+          application/json: $input.json('$')
+      RequestParameters:
+        method.request.querystring.name: false
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+    DependsOn:
+      - groupDotsApiSubscribe
+      - groupDotsSubscribeLambda
+
+  groupDotsApiInviteEndpoint:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ResourceId: !Ref groupDotsApiInvite
+      RestApiId: !Ref groupDotsApi
+      AuthorizationType: NONE
+      HttpMethod: POST
+      Integration:
+        Type: AWS
+        IntegrationHttpMethod: POST
+        Uri: !Sub
+          - >-
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${INVITE_LAMBDA}/invocations
+          - INVITE_LAMBDA: !GetAtt groupDotsInviteLambda.Arn
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseTemplates:
+              application/json: $input.json('$')
+            ResponseParameters:
+                method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                method.response.header.Access-Control-Allow-Methods: "'GET,POST,PUT,DELETE,OPTIONS'"
+                method.response.header.Access-Control-Allow-Origin: "'*'"
+        RequestTemplates:
+          application/json: $input.json('$')
+      RequestParameters:
+        method.request.querystring.name: false
+      MethodResponses:
+        - ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: true
+            method.response.header.Access-Control-Allow-Methods: true
+            method.response.header.Access-Control-Allow-Origin: true
+          StatusCode: '200'
+    DependsOn:
+      - groupDotsApiInvite
+      - groupDotsInviteLambda
+
+  groupDotsApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref groupDotsApi
+      StageName: production
+    DependsOn:
+      - groupDotsApiSubscribeEndpoint
+      - groupDotsApiInviteEndpoint
+
+  groupDotsApiSubscribePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref groupDotsSubscribeLambda
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${groupDotsApi}/*/*/*"
+    DependsOn:
+      - groupDotsApiDeployment
+
+  groupDotsApiInvitePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref groupDotsInviteLambda
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${groupDotsApi}/*/*/*"
+    DependsOn:
+      - groupDotsApiDeployment
+
+  groupDotsDB:
+    Type: 'AWS::DynamoDB::Table'
+    Properties:
+      TableName: Dots
+      AttributeDefinitions:
+        - AttributeName: roomId
+          AttributeType: S  
+      KeySchema:
+        - AttributeName: roomId
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+  
+  groupDotsInstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for EC2 instance
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  groupDotsInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t4g.micro
+      ImageId: ami-0964d1dc1edd4bd2f
+      SecurityGroups:
+        - Ref: groupDotsInstanceSecurityGroup
+      KeyName: vockey 
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          yum update -y
+          yum install -y docker
+          service docker start
+          usermod -a -G docker ec2-user
+          docker run -p 443:8080 \
+            -e "AWS_DYNAMODB_ENDPOINT=https://dynamodb.us-east-1.amazonaws.com"\
+            -e "AWS_ACCESS_KEY=ASIAYQFR7ZBZQFI722CW" \
+            -e "AWS_SECRET_KEY=FhDKvlgElWIQldSuetSC1+TiDq6qQ7ebQUmQhyg4" \
+            -e "AWS_SESSION_TOKEN=FwoGZXIvYXdzEDQaDFOXxHfHkdgNsA7RHyLAATB25oumNjPeomAqLOhb3eaAlPpyqlgjFJd6dXuXIJWHvy/rx3El4hRonJPnX91cQiHwGcupXbqUc888XSHRiDndqgONL2R20/rFdLRERxPLkuzHQpj9XwqOhKqDQaWdWPUVgTdd12ly5fHpcjUOhkDfbPPlMdb4eWxGeLoyJV3BDGWFqAzVqnhNa11CGt5oq7qJ0/eXJIGwQzKCrxvwodFRbGZg5eWuIB/BGRAa/ipoafNztDE/jm2U38RV4J+hBCiWmZ6mBjIt/dQfJ0oF9bwyV3RRQgB1tWYlRUtumHBETwxH758sEhB9f0mvhctNQzpgdPxk"\
+            -e "AWS_REGION=us-east-1" \
+            -e "GOOGLE_API_KEY=AIzaSyBuSgMNKQbw77OpJpKRhjH17alYk85Exxk" \
+            badhrinadh/group-dots-api
+
+Outputs:
+  GroupDotsInstancePublicIP:
+    Description: Public IP Address of the EC2 Instance
+    Value: !GetAtt groupDotsInstance.PublicIp
+  GroupDotsApiUrl:
+    Description: API Gateway URL for the groupDotsApi
+    Value: !Sub "https://${groupDotsApi}.execute-api.${AWS::Region}.amazonaws.com"
